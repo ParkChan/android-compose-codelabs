@@ -13,38 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+val snapshotVersion: String? = System.getenv("COMPOSE_SNAPSHOT_ID")
 
-buildscript {
+pluginManagement {
     repositories {
+        gradlePluginPortal()
         google()
         mavenCentral()
     }
-
-    dependencies {
-        classpath 'com.android.tools.build:gradle:8.0.2'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.22"
-    }
 }
-
-plugins {
-    id 'com.diffplug.spotless' version '6.19.0'
-}
-
-subprojects {
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-        google()
-        mavenCentral()
-    }
-
-    apply plugin: 'com.diffplug.spotless'
-    spotless {
-        kotlin {
-            target '**/*.kt'
-            targetExclude("$buildDir/**/*.kt")
-            targetExclude('bin/**/*.kt')
-
-            ktlint("0.45.2")
-            licenseHeaderFile rootProject.file('spotless/copyright.kt')
+        snapshotVersion?.let {
+            println("https://androidx.dev/snapshots/builds/$it/artifacts/repository/")
+            maven { url = uri("https://androidx.dev/snapshots/builds/$it/artifacts/repository/") }
         }
+
+        google()
+        mavenCentral()
     }
 }
+rootProject.name = "Reply"
+include(":app")
